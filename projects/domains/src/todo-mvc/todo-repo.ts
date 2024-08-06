@@ -10,7 +10,7 @@ type TodoRepo = {
 }
 
 export const TodoRepoExtern = Remesh.extern<TodoRepo>({
-  name: 'TodoRepoExtern',
+  // name: 'TodoRepoExtern',
   default: {
     async getTodoList() {
       throw new Error('Not implemented')

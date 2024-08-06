@@ -7,6 +7,6 @@ export type Storage = {
 }
 
 export const Storage = Remesh.extern<Storage | null>({
-  name: 'StorageExtern',
+  // name: 'StorageExtern',
   default: null,
 })

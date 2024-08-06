@@ -124,11 +124,11 @@ typings/
 
 # rollup.js default build output
 dist/
-!dist/
+# !dist/
 cjs/
-!cjs/
+# !cjs/
 esm/
-!esm
+# !esm
 packages/*/dist/
 projects/*/dist/
 packages/*/cjs/
@@ -170,3 +170,5 @@ lib
 .clinic
 
 projects/builder/
+
+**/dist/

@@ -15,6 +15,7 @@
     "remesh-redux-devtools": "^4.0.0",
     "remesh-vue": "^4.0.0",
     "rxjs": "^7.5.5",
+    "todomvc-app-css": "^2.4.2",
     "vue": "^3.2.25"
   },
   "devDependencies": {
