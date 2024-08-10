@@ -7,18 +7,21 @@ import { useRemeshDomain, useRemeshQuery, useRemeshSend } from 'remesh-vue'
 import { TodoDomain } from 'remesh-domains-for-demos/src/todo-mvc'
 
 type Filter = 'all' | 'active' | 'completed'
-const filter = ref<Filter>('all')
 
 const filterList: Filter[] = ['all', 'active', 'completed']
 
 const domain = useRemeshDomain(TodoDomain())
-const todoList = useRemeshQuery(domain.query.TodoListQuery(filter.value === 'all' ? undefined : filter.value))
+const todoList = useRemeshQuery(domain.query.TodoListQuery())
 const send = useRemeshSend()
 const activeTodoCount = useRemeshQuery(domain.query.ActiveTodoCountQuery())
 const hasCompleted = useRemeshQuery(domain.query.HasCompletedQuery())
 const allCompleted = useRemeshQuery(domain.query.AllCompletedQuery())
 
 const newTodo = ref('')
+
+function updateFilter(value: Filter) {
+  send(domain.command.SetTodoListFilterCommand(value))
+}
 
 function handleToggleAll() {
   send(domain.command.ToggleAllTodoCompletedCommand(!allCompleted.value))
@@ -50,7 +53,7 @@ function capitalizeFirstLetter(str: string) {
     <section class="main">
       <input :checked="allCompleted" id="toggle-all" class="toggle-all" type="checkbox" @change="handleToggleAll" />
       <label htmlFor="toggle-all" />
-      <ul class="todo-list" :key="filter">
+      <ul class="todo-list">
         <TodoItem v-for="todo in todoList" :key="todo.id" :todo="todo" />
       </ul>
     </section>
@@ -60,7 +63,7 @@ function capitalizeFirstLetter(str: string) {
       </span>
       <ul class="filters">
         <li v-for="(item, index) in filterList" :key="index">
-          <a @click="filter = item" :href="`#/${item}`">{{ capitalizeFirstLetter(item) }}</a>
+          <a @click="updateFilter(item)" :href="`#/${item}`">{{ capitalizeFirstLetter(item) }}</a>
         </li>
       </ul>
       <button v-if="hasCompleted" class="clear-completed" @click="handleClearCompleted">Clear completed</button>

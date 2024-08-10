@@ -9,6 +9,8 @@ export type Todo = {
   completed: boolean
 }
 
+export type TodoFilter = 'all' | 'active' | 'completed'
+
 export const TodoDomain = Remesh.domain({
   name: 'TodoDomain',
   impl: (domain) => {
@@ -19,13 +21,27 @@ export const TodoDomain = Remesh.domain({
       default: [],
     })
 
+    const TodoListFilterState = domain.state<TodoFilter>({
+      name: 'TodoListFilterState',
+      default: 'all',
+    })
+
+    const TodoListFilterQuery = domain.query({
+      name: 'TodoListFilterQuery',
+      impl({ get }) {
+        return get(TodoListFilterState())
+      },
+    })
+
     const TodoListQuery = domain.query({
       name: 'TodoListQuery',
-      impl({ get }, status?: 'completed' | 'active') {
+      impl({ get }, status?: TodoFilter) {
         const todoList = get(TodoListState())
-        if (status === 'active') {
+        const _status = status || get(TodoListFilterState())
+
+        if (_status === 'active') {
           return todoList.filter((todo) => !todo.completed)
-        } else if (status === 'completed') {
+        } else if (_status === 'completed') {
           return todoList.filter((todo) => todo.completed)
         } else {
           return todoList
@@ -51,6 +67,13 @@ export const TodoDomain = Remesh.domain({
       name: 'AllCompletedQuery',
       impl({ get }) {
         return get(ActiveTodoCountQuery()) === 0 && get(TodoListQuery()).length > 0
+      },
+    })
+
+    const SetTodoListFilterCommand = domain.command({
+      name: 'SetTodoListFilterCommand',
+      impl(_, status: TodoFilter) {
+          return TodoListFilterState().new(status)
       },
     })
 
@@ -231,11 +254,13 @@ export const TodoDomain = Remesh.domain({
     return {
       query: {
         TodoListQuery,
+        TodoListFilterQuery,
         ActiveTodoCountQuery,
         HasCompletedQuery,
         AllCompletedQuery,
       },
       command: {
+        SetTodoListFilterCommand,
         AddTodoCommand,
         RemoveTodoCommand,
         ToggleTodoCompletedCommand,
